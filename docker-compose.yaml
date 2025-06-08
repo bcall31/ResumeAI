@@ -1,0 +1,35 @@
+
+services:
+  api:
+    environment:
+      CORS_HOST: ${PUBLIC_URL}
+      SERPER_API_KEY: ${SERPER_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    build:
+      context: api
+      dockerfile: Dockerfile.dev
+    env_file:
+      - ./.env 
+    ports:
+      - 8000:8000
+    volumes:
+      - ./api:/app
+    restart: always
+
+  ghi:
+    image: node:20-alpine
+    command: sh run.sh
+    working_dir: /app
+    volumes:
+      - ./ghi:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      HOST_OS: ${OS}
+      HOST: "0.0.0.0"
+      PUBLIC_URL: ${PUBLIC_URL}
+      REACT_APP_API_HOST: ${REACT_APP_API_HOST}
+    depends_on:
+      - api
+    restart: always

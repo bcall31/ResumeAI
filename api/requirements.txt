@@ -1,0 +1,11 @@
+python-multipart
+python-dotenv
+markitdown
+fpdf
+crewai
+crewai_tools
+langchain-community
+fastapi
+uvicorn
+pydantic
+dotenv
