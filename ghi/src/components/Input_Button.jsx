@@ -1,31 +1,23 @@
 // Input_Button.jsx
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useTailorResumeMutation } from '../store/webscraperAPI';
-import ResumeUpload from './Upload_File';
+import { useNavigate } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
-const Input_Button = ({ isForm = false, resume, endpoint, buttonText = "Submit" }) => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+const Input_Button = ({ isForm = false, resume, endpoint, onError, onLoading, buttonText = "Submit" }) => {
     const [response, setResponse] = useState(null);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const navigate = useNavigate();
+
     useEffect(() => {
-        if (loading) {
-            document.body.style.cursor = "wait";
-        } else if(!loading) {
-            document.body.style.cursor = "default";
-        }
-        if (error) {
-            
-            console.error('Error:', error);
-        }
         if (response) {
             console.log('Response:', response);
         }
-    }, [loading, error, response]);
-    
+    }, [response]);
+
+    const handleNavigate = (url) => {
+        navigate(`/${url}`);
+    };
 
     const handleClick = async () => {
         if (isForm) {
@@ -41,20 +33,55 @@ const Input_Button = ({ isForm = false, resume, endpoint, buttonText = "Submit" 
             formData.append('gitlab_url', gitlabUrl);
             formData.append('personal_write_up', personalWriteUp);
             formData.append('personal_website', personalWebsite);
-            setLoading(true);
+            onLoading(true);
+
+            if (!resume) {
+                onError('No resume file provided.');
+                onLoading(false);
+                return;
+            }
             console.log("Resume is File?", resume instanceof File); // should be true
+
+            if (!jobPosting) {
+                onError('No job posting provided.');
+                onLoading(false);
+                return;
+            }
 
             if (!isSubmitted) {
                 setIsSubmitted(true);
-                axios.post('http://localhost:8000/job-application', formData
+                axios.post('http://localhost:8000/job-application', formData, {
+                    responseType: 'blob', 
+                  }
+
+                  
                 ).then(response => {
+
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+
+                    // Extract filename from headers if needed
+                    const contentDisposition = response.headers['content-disposition'];
+                    let filename = 'aitailoredresume.zip';
+                    if (contentDisposition) {
+                    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+                    if (match?.[1]) filename = match[1];
+                    }
+
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                    window.URL.revokeObjectURL(url);
                     console.log(response)
                     setResponse(response.data);
                     
                 }).catch(error => {
-                    setError(error);
+                    onError(error);
                 }).finally(() => {
-                    setLoading(false);
+                    onLoading(false);
                     setIsSubmitted(false);
                 });
             }
@@ -62,7 +89,7 @@ const Input_Button = ({ isForm = false, resume, endpoint, buttonText = "Submit" 
         } else {
             const baseUrl = `${window.location.protocol}//${window.location.host}`;
             console.log(baseUrl)
-            window.location.href = baseUrl + endpoint;
+            handleNavigate(endpoint);
         }
     };
 

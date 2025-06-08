@@ -4,13 +4,16 @@ export default function Home() {
     return (
         <>
             <Container>
-                <h1>Home</h1>
-                <Card style={{ width: '18rem', margin: 'auto'}}>
+                <Card style={{ width: '50%', margin: 'auto', marginTop: '5rem'}}>
                     
                     <Card.Body>
-                        <Card.Title>Perfect your resume with AI</Card.Title>
+                        <Card.Title className="text-center">Perfect your resume with AI</Card.Title>
+                        <Card.Text className="text-center">
+                            ResumeAI is a platform that uses AI to help you perfect your resume.
+                            Provide a link to the job posting annd upload your resume to have it tailored to fit the job.
+                        </Card.Text>
                         <div className="d-flex justify-content-center mt-5">
-                            <Input_Button buttonText={"Get Started"} endpoint={"/resume"} isForm={false}></Input_Button>
+                            <Input_Button buttonText={"Get Started"} endpoint={"resume"} isForm={false}></Input_Button>
                         </div>
                     </Card.Body>
                 </Card>

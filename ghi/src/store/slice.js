@@ -24,9 +24,14 @@ const submitSlice = createSlice({
       console.log(action.payload)
       state.resume = action.payload;
     },
+
+    setError: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
 
-export const { setSubmit, setResume } = submitSlice.actions;
+export const { setSubmit, setResume, setError } = submitSlice.actions;
 export default submitSlice.reducer;
+

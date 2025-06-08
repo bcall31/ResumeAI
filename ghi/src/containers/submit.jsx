@@ -3,18 +3,48 @@ import Input_Button from "../components/Input_Button";
 import Input_Area from "../components/Input_Area";
 import Input_Input from "../components/Input_Input";
 import UploadFile from "../components/Upload_File";
-import { useState } from 'react';
+import Error_Tag from '../components/Error_Tag';
+import Modal_Component from '../components/Modal';
+import { useEffect, useState } from 'react';
 
 export default function Submit() {
     const [resumeFile, setResumeFile] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
+
+    useEffect(() => {
+        if (loading) {
+            handleLoading(true);
+        } else if(!loading) {
+            handleLoading(false);
+        }
+        if (error) {
+            console.error('Error:', error);
+        }
+    }, [error, loading]);
+
+
+    const handleLoading = (isLoading) => {
+        if (isLoading) {
+            setShowModal(true);
+        } else {
+            setShowModal(false);
+        }
+    }
+    
     
     return (
         <>
+            {showModal && 
+                <Modal_Component title="Loading..." text="Please wait while we process your request." onCancel={() => setShowModal(false)}/>
+                }
             <Container className="my-5">
                 <Card className="shadow-sm">
                     <Card.Body>
-                    <Card.Title className="text-center mb-4">Submit Your Resume and Job Info</Card.Title>
+                    <Card.Title className="text-center mb-4">Submit Your Resume and Job Posting Info</Card.Title>
+                    <Error_Tag error={error} ></Error_Tag>
                     <Form>
                         <Row className="mb-3">
                         <Col md={6}>
@@ -67,7 +97,7 @@ export default function Submit() {
                         </Row>
 
                         <div className="text-center">
-                        <Input_Button buttonText="Submit" isForm={true} resume={resumeFile} />
+                        <Input_Button buttonText="Submit" isForm={true} resume={resumeFile} onError={setError} onLoading={setLoading}/>
                         </div>
                     </Form>
                     </Card.Body>

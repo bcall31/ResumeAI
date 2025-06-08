@@ -183,7 +183,7 @@ async def job_application(
                 """
             ),
             expected_output="An updated resume that effectivly highlights the candidates abilities and how they match the job posting as a .pdf file.",
-            output_file="new_resume.md",
+            output_file="new_resume.pdf",
             context=[researcher_task, profiler_task],
             agent=strategist,
         )
